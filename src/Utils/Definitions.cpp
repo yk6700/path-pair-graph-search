@@ -73,6 +73,7 @@ bool Node::more_than_full_cost::operator()(const NodePtr &a, const NodePtr &b) c
     }
 }
 
+//TODO add more queue deciders
 
 std::ostream& operator<<(std::ostream &stream, const Node &node) {
     // Printed in JSON format

@@ -9,7 +9,7 @@ ShortestPathHeuristic::ShortestPathHeuristic(size_t source, size_t graph_size, c
     : source(source), all_nodes(graph_size+1, nullptr) {
     size_t i = 0;
     for (auto node_iter = this->all_nodes.begin(); node_iter != this->all_nodes.end(); node_iter++) {
-        *node_iter = std::make_shared<Node>(i++, Pair<size_t>({0,0}), Pair<size_t>({MAX_COST,MAX_COST}));
+        *node_iter = std::make_shared<Node>(i++, Pair<size_t>({0,0}), Pair<size_t>({MAX_COST,MAX_COST}), Pair<size_t>({1,1}));
     }
 
     compute(0, adj_matrix);

@@ -6,11 +6,13 @@
 BOAStar::BOAStar(const AdjacencyMatrix &adj_matrix, Pair<double> eps, const LoggerPtr logger) :
 	adj_matrix(adj_matrix), eps(eps), logger(logger) {}
 
-void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, SolutionSet &solutions) {
+void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, SolutionSet &solutions, Pair<size_t> Bound) {
     this->start_logging(source, target);
 
     NodePtr node;
     NodePtr next;
+    int expended = 0;
+    int generated = 0;
 
     // Saving all the unused NodePtrs in a vector improves performace for some reason
     std::vector<NodePtr> closed;
@@ -19,13 +21,14 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
     std::vector<size_t> min_g2(this->adj_matrix.size()+1, MAX_COST);
 
     // Init open heap
-    Node::more_than_full_cost more_than;
+    Node::more_than_full_cost more_than; //TODO change queue deciders
     std::vector<NodePtr> open;
     std::make_heap(open.begin(), open.end(), more_than);
 
-    node = std::make_shared<Node>(source, Pair<size_t>({0,0}), heuristic(source));
+    node = std::make_shared<Node>(source, Pair<size_t>({0,0}), heuristic(source), Bound);
     open.push_back(node);
     std::push_heap(open.begin(), open.end(), more_than);
+    generated++;
 
     while (open.empty() == false) {
         // Pop min from queue and process
@@ -49,11 +52,19 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
 
         // Check to which neighbors we should extend the paths
         const std::vector<Edge> &outgoing_edges = adj_matrix[node->id];
+        //TODO add expand
+        expended++;
         for(auto p_edge = outgoing_edges.begin(); p_edge != outgoing_edges.end(); p_edge++) {
             size_t next_id = p_edge->target;
             Pair<size_t> next_g = {node->g[0]+p_edge->cost[0], node->g[1]+p_edge->cost[1]};
             Pair<size_t> next_h = heuristic(next_id);
-
+            //std::cout << "next_g: " << next_g << std::endl;
+            //std::cout << "next_h: " << next_h << std::endl;
+            //TODO add bound check
+            if(next_g[0]+next_h[0] > Bound[0] || next_g[1]+next_h[1] > Bound[1]){
+                std::cout << "f1: " << next_g[0]+next_h[0] << ", f2: " << next_g[1]+next_h[1] << std::endl;
+                continue;
+            }
             // Dominance check
             if ((((1+this->eps[1])*(next_g[1]+next_h[1])) >= min_g2[target]) ||
                 (next_g[1] >= min_g2[next_id])) {
@@ -63,16 +74,17 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
             // If not dominated create node and push to queue
             // Creation is defered after dominance check as it is
             // relatively computational heavy and should be avoided if possible
-            next = std::make_shared<Node>(next_id, next_g, next_h, node);
-
+            next = std::make_shared<Node>(next_id, next_g, next_h, Bound,node);
+            //std::cout << "F: " << next->f << std::endl;
             open.push_back(next);
             std::push_heap(open.begin(), open.end(), more_than);
-
+            generated++; //TODO add generate
             closed.push_back(node);
         }
     }
 
-    this->end_logging(solutions);
+    //TODO add expanded and generated nodes nodes
+    this->end_logging(solutions, expended, generated);
 }
 
 
@@ -91,11 +103,19 @@ void BOAStar::start_logging(size_t source, size_t target) {
 }
 
 
-void BOAStar::end_logging(SolutionSet &solutions) {
+void BOAStar::end_logging(SolutionSet &solutions, int expended, int generated) {
     // All logging is done in JSON format
     std::stringstream finish_info_json;
+    //TODO add expanded and generated nodes nodes
     finish_info_json
-        << "{\n"
+            << "{\n"
+            <<      "\t\"Expended\": " << expended << ",";
+    finish_info_json
+            << "\n"
+            <<      "\t\"Generated\": " << generated << ",";
+
+    finish_info_json
+        << "\n"
         <<      "\t\"solutions\": [";
 
     size_t solutions_count = 0;

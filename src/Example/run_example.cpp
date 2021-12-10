@@ -12,6 +12,10 @@ const std::string resource_path = "src/Example/Resources/";
 
 // Simple example to demonstarte the usage of the algorithm
 void single_run_ny_map(size_t source, size_t target, double eps, LoggerPtr logger) {
+//    size_t a = 10;
+//    size_t c = 4;
+//    double d = ((double)a) / ((double)c);
+//    std::cout << d << std::endl;
     std::cout << "-----Start NY Map Single Example: SRC=" << source << " DEST=" << target << " EPS=" << eps << "-----" << std::endl;
 
     // Load files
@@ -37,10 +41,11 @@ void single_run_ny_map(size_t source, size_t target, double eps, LoggerPtr logge
     Heuristic heuristic = std::bind( &ShortestPathHeuristic::operator(), sp_heuristic, _1);
 
     // Compute BOAStar
+    Pair<size_t> bound = Pair<size_t>({2000000,4000000});
     std::cout << "Start Computing BOAStar" << std::endl;
     SolutionSet boa_solutions;
     BOAStar boa_star(graph, {eps,eps}, logger);
-    boa_star(source, target, heuristic, boa_solutions);
+    boa_star(source, target, heuristic, boa_solutions, bound);
     std::cout << "Finish Computing BOAStar" << std::endl;
 
     std::cout << "BOAStar Solutions:" << std::endl;
@@ -51,17 +56,17 @@ void single_run_ny_map(size_t source, size_t target, double eps, LoggerPtr logge
     std::cout << std::endl;
 
     // Compute PPA
-    std::cout << "Start Computing PPA" << std::endl;
-    SolutionSet ppa_solutions;
-    PPA ppa(graph, {eps,eps}, logger);
-    ppa(source, target, heuristic, ppa_solutions);
-    std::cout << "Finish Computing PPA" << std::endl;
-
-    solutions_count = 0;
-    for (auto solution = ppa_solutions.begin(); solution != ppa_solutions.end(); solution++) {
-        std::cout << ++solutions_count << ". " << *(*solution) << std::endl;
-    }
-    std::cout << std::endl;
+//    std::cout << "Start Computing PPA" << std::endl;
+//    SolutionSet ppa_solutions;
+//    PPA ppa(graph, {eps,eps}, logger);
+//    ppa(source, target, heuristic, ppa_solutions);
+//    std::cout << "Finish Computing PPA" << std::endl;
+//
+//    solutions_count = 0;
+//    for (auto solution = ppa_solutions.begin(); solution != ppa_solutions.end(); solution++) {
+//        std::cout << ++solutions_count << ". " << *(*solution) << std::endl;
+//    }
+//    std::cout << std::endl;
 
     std::cout << "-----End NY Map Single Example-----" << std::endl;
 }
@@ -101,11 +106,12 @@ void run_queries(std::string map, double eps, LoggerPtr logger) {
 
         SolutionSet boa_solutions;
         BOAStar boa_star(graph, {eps,eps}, logger);
-        boa_star(source, target, heuristic, boa_solutions);
+        Pair<size_t> bound = Pair<size_t>({140000,140000});
+        boa_star(source, target, heuristic, boa_solutions, bound);
 
-        SolutionSet ppa_solutions;
-        PPA ppa(graph, {eps,eps}, logger);
-        ppa(source, target, heuristic, ppa_solutions);
+//        SolutionSet ppa_solutions;
+//        PPA ppa(graph, {eps,eps}, logger);
+//        ppa(source, target, heuristic, ppa_solutions);
     }
 
     std::cout << "-----End " << map << " Map Queries Example-----" << std::endl;
@@ -150,6 +156,7 @@ void run_all_queries(void) {
 
 
 int main(void) {
+//    std::cout << "work" << std::endl;
     LoggerPtr logger = new Logger("example_log.json");
     // Easy - Benchmark C_BOA code gets around 20ms
     size_t easy_source = 9899;
@@ -159,7 +166,7 @@ int main(void) {
     // Hard - Benchmark C_BOA code gets around 2k ms
     size_t hard_source = 180834;
     size_t hard_target = 83150;
-    single_run_ny_map(hard_source, hard_target, 0, logger);
+    //single_run_ny_map(hard_source, hard_target, 0, logger);
     delete logger;
 
     // try {

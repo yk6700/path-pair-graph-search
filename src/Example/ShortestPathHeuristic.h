@@ -3,6 +3,7 @@
 
 #include "../Utils/Definitions.h"
 
+
 // Precalculates heuristic based on Dijkstra shortest paths algorithm.
 // On call to operator() returns the value of the heuristic in O(1)
 class ShortestPathHeuristic {
