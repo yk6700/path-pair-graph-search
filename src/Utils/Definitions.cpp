@@ -73,6 +73,27 @@ bool Node::more_than_full_cost::operator()(const NodePtr &a, const NodePtr &b) c
     }
 }
 
+
+bool Node::more_than_full_cost_avg::operator()(const NodePtr &a, const NodePtr &b) const {
+    double avg_a = (a->f[0] + a->f[1]) / 2;
+    double avg_b = (b->f[0] + b->f[1]) / 2;
+    return avg_a > avg_b;
+}
+
+bool Node::more_than_full_cost_min::operator()(const NodePtr &a, const NodePtr &b) const {
+    double min_a = std::min(a->f[0], a->f[1]);
+    double min_b = std::min(b->f[0], b->f[1]);
+    return min_a > min_b;
+}
+
+
+bool Node::more_than_full_cost_max::operator()(const NodePtr &a, const NodePtr &b) const {
+    double max_a = std::max(a->f[0], a->f[1]);
+    double max_b = std::max(b->f[0], b->f[1]);
+    return max_a > max_b;
+}
+
+
 //TODO add more queue deciders
 
 std::ostream& operator<<(std::ostream &stream, const Node &node) {

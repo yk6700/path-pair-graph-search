@@ -3,11 +3,12 @@
 
 #include "BOAStar.h"
 
-BOAStar::BOAStar(const AdjacencyMatrix &adj_matrix, Pair<double> eps, const LoggerPtr logger) :
-	adj_matrix(adj_matrix), eps(eps), logger(logger) {}
+BOAStar::BOAStar(const AdjacencyMatrix &adj_matrix, Pair<double> eps, Pair<size_t> bound, const LoggerPtr logger) :
+	adj_matrix(adj_matrix), eps(eps), logger(logger), bounds(bound) {}
 
 void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, SolutionSet &solutions, Pair<size_t> Bound) {
     this->start_logging(source, target);
+    //Bound = this->bounds;
 
     NodePtr node;
     NodePtr next;
@@ -37,9 +38,10 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
         open.pop_back();
 
         // Dominance check
-        if ((((1+this->eps[1])*node->f[1]) >= min_g2[target]) ||
+        if ((((1+this->eps[1])*(node->g[1]+node->h[1])) >= min_g2[target]) ||
             (node->g[1] >= min_g2[node->id])) {
             closed.push_back(node);
+            //std::cout << "f: " << node->g[1]+node->h[1] << ", min_g2_targer: " << min_g2[target] << ", g1:" << node->g[1] << ", min_g2_next: " << min_g2[node->id] << std::endl;
             continue;
         }
 
@@ -53,7 +55,6 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
         // Check to which neighbors we should extend the paths
         const std::vector<Edge> &outgoing_edges = adj_matrix[node->id];
         //TODO add expand
-        expended++;
         for(auto p_edge = outgoing_edges.begin(); p_edge != outgoing_edges.end(); p_edge++) {
             size_t next_id = p_edge->target;
             Pair<size_t> next_g = {node->g[0]+p_edge->cost[0], node->g[1]+p_edge->cost[1]};
@@ -68,6 +69,7 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
             // Dominance check
             if ((((1+this->eps[1])*(next_g[1]+next_h[1])) >= min_g2[target]) ||
                 (next_g[1] >= min_g2[next_id])) {
+                //std::cout << "f: " << next_g[1]+next_h[1] << ", min_g2_targer: " << min_g2[target] << ", g1:" << next_g[1] << ", min_g2_next: " << min_g2[next_id] << std::endl;
                 continue;
             }
 
@@ -81,6 +83,7 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
             generated++; //TODO add generate
             closed.push_back(node);
         }
+        expended++;
     }
 
     //TODO add expanded and generated nodes nodes
@@ -94,7 +97,8 @@ void BOAStar::start_logging(size_t source, size_t target) {
     start_info_json
         << "{\n"
         <<      "\t\"name\": \"BOAStar\",\n"
-        <<      "\t\"eps\": " << this->eps << "\n"
+        <<      "\t\"eps\": " << this->eps << ",\n"
+        <<      "\t\"bounds\": " << this->bounds << "\n"
         << "}";
 
     if (this->logger != nullptr) {

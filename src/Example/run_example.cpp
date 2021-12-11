@@ -44,7 +44,7 @@ void single_run_ny_map(size_t source, size_t target, double eps, LoggerPtr logge
     Pair<size_t> bound = Pair<size_t>({2000000,4000000});
     std::cout << "Start Computing BOAStar" << std::endl;
     SolutionSet boa_solutions;
-    BOAStar boa_star(graph, {eps,eps}, logger);
+    BOAStar boa_star(graph, {eps,eps},bound, logger);
     boa_star(source, target, heuristic, boa_solutions, bound);
     std::cout << "Finish Computing BOAStar" << std::endl;
 
@@ -72,7 +72,7 @@ void single_run_ny_map(size_t source, size_t target, double eps, LoggerPtr logge
 }
 
 
-void run_queries(std::string map, double eps, LoggerPtr logger) {
+void run_queries(std::string map, double eps, LoggerPtr logger, Pair<size_t> bound) {
     std::cout << "-----Start " << map << " Map Queries Example: EPS=" << eps << "-----" << std::endl;
 
     // Load files
@@ -105,8 +105,7 @@ void run_queries(std::string map, double eps, LoggerPtr logger) {
         Heuristic heuristic = std::bind( &ShortestPathHeuristic::operator(), sp_heuristic, _1);
 
         SolutionSet boa_solutions;
-        BOAStar boa_star(graph, {eps,eps}, logger);
-        Pair<size_t> bound = Pair<size_t>({140000,140000});
+        BOAStar boa_star(graph, {eps,eps},bound, logger);
         boa_star(source, target, heuristic, boa_solutions, bound);
 
 //        SolutionSet ppa_solutions;
@@ -121,59 +120,59 @@ void run_queries(std::string map, double eps, LoggerPtr logger) {
 // Run all queries on all availible maps. The logs outputed from this function are
 // used for running the tests
 void run_all_queries(void) {
-    LoggerPtr logger_bay = new Logger("queries_BAY_log.json");
-    run_queries("BAY", 0.1, logger_bay);
-    run_queries("BAY", 0.05, logger_bay);
-    run_queries("BAY", 0.025, logger_bay);
-    run_queries("BAY", 0.01, logger_bay);
-    run_queries("BAY", 0, logger_bay);
-    delete logger_bay;
+//    LoggerPtr logger_bay = new Logger("queries_BAY_log.json");
+//    run_queries("BAY", 0.1, logger_bay);
+//    run_queries("BAY", 0.05, logger_bay);
+//    run_queries("BAY", 0.025, logger_bay);
+//    run_queries("BAY", 0.01, logger_bay);
+//    run_queries("BAY", 0, logger_bay, Pair<size_t>({1500000,1500000}));
+//    run_queries("BAY", 0, logger_bay, Pair<size_t>({2000000,2000000}));
+//    delete logger_bay;
 
-    LoggerPtr logger_col = new Logger("queries_COL_log.json");
-    run_queries("COL", 0.1, logger_col);
-    run_queries("COL", 0.05, logger_col);
-    run_queries("COL", 0.025, logger_col);
-    run_queries("COL", 0.01, logger_col);
-    run_queries("COL", 0, logger_col);
-    delete logger_col;
+//    LoggerPtr logger_col = new Logger("queries_COL_log.json");
+//    run_queries("COL", 0.1, logger_col);
+//    run_queries("COL", 0.05, logger_col);
+//    run_queries("COL", 0.025, logger_col);
+//    run_queries("COL", 0.01, logger_col);
+//    run_queries("COL", 0, logger_col, Pair<size_t>({1500000,1500000}));
+//    delete logger_col;
 
     LoggerPtr logger_ne = new Logger("queries_NE_log.json");
-    run_queries("NE", 0.1, logger_ne);
-    run_queries("NE", 0.05, logger_ne);
-    run_queries("NE", 0.025, logger_ne);
-    run_queries("NE", 0.01, logger_ne);
-    run_queries("NE", 0, logger_ne);
+//    run_queries("NE", 0.1, logger_ne);
+//    run_queries("NE", 0.05, logger_ne);
+//    run_queries("NE", 0.025, logger_ne);
+//    run_queries("NE", 0.01, logger_ne);
+    run_queries("NE", 0, logger_ne, Pair<size_t>({15000000,15000000}));
     delete logger_ne;
 
-    LoggerPtr logger_ny = new Logger("queries_NY_log.json");
-    run_queries("NY", 0.1, logger_ny);
-    run_queries("NY", 0.05, logger_ny);
-    run_queries("NY", 0.025, logger_ny);
-    run_queries("NY", 0.01, logger_ny);
-    run_queries("NY", 0, logger_ny);
-    delete logger_ny;
+//    LoggerPtr logger_ny = new Logger("queries_NY_log.json");
+//    run_queries("NY", 0.1, logger_ny);
+//    run_queries("NY", 0.05, logger_ny);
+//    run_queries("NY", 0.025, logger_ny);
+//    run_queries("NY", 0.01, logger_ny);
+//    //run_queries("NY", 0, logger_ny, Pair<size_t>({1500000,1500000}));
+//    delete logger_ny;
 }
 
 
 int main(void) {
-//    std::cout << "work" << std::endl;
-    LoggerPtr logger = new Logger("example_log.json");
-    // Easy - Benchmark C_BOA code gets around 20ms
-    size_t easy_source = 9899;
-    size_t easy_target = 7857;
-    single_run_ny_map(easy_source, easy_target, 0, logger);
+//    LoggerPtr logger = new Logger("example_log.json");
+//    // Easy - Benchmark C_BOA code gets around 20ms
+//    size_t easy_source = 9899;
+//    size_t easy_target = 7857;
+//    single_run_ny_map(easy_source, easy_target, 0, logger);
+//
+//    // Hard - Benchmark C_BOA code gets around 2k ms
+//    size_t hard_source = 180834;
+//    size_t hard_target = 83150;
+//    //single_run_ny_map(hard_source, hard_target, 0, logger);
+//    delete logger;
 
-    // Hard - Benchmark C_BOA code gets around 2k ms
-    size_t hard_source = 180834;
-    size_t hard_target = 83150;
-    //single_run_ny_map(hard_source, hard_target, 0, logger);
-    delete logger;
-
-    // try {
-    //     run_all_queries();
-    // } catch (const std::exception &e) {
-    //     std::cout << "Exception: " << e.what() << std::endl;
-    // }
+     try {
+         run_all_queries();
+     } catch (const std::exception &e) {
+         std::cout << "Exception: " << e.what() << std::endl;
+     }
     return 0;
 }
 
