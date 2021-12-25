@@ -22,7 +22,7 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
     std::vector<size_t> min_g2(this->adj_matrix.size()+1, MAX_COST);
 
     // Init open heap
-    Node::more_than_full_cost more_than; //TODO change queue deciders
+    Node::more_than_full_cost_max more_than; //TODO change queue deciders
     std::vector<NodePtr> open;
     std::make_heap(open.begin(), open.end(), more_than);
 
@@ -49,7 +49,8 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
 
         if (node->id == target) {
             solutions.push_back(node);
-            continue;
+            this->end_logging(solutions, expended, generated);
+            return;
         }
 
         // Check to which neighbors we should extend the paths
@@ -63,7 +64,7 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
             //std::cout << "next_h: " << next_h << std::endl;
             //TODO add bound check
             if(next_g[0]+next_h[0] > Bound[0] || next_g[1]+next_h[1] > Bound[1]){
-                std::cout << "f1: " << next_g[0]+next_h[0] << ", f2: " << next_g[1]+next_h[1] << std::endl;
+                //std::cout << "f1: " << next_g[0]+next_h[0] << ", f2: " << next_g[1]+next_h[1] << std::endl;
                 continue;
             }
             // Dominance check
@@ -72,7 +73,6 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
                 //std::cout << "f: " << next_g[1]+next_h[1] << ", min_g2_targer: " << min_g2[target] << ", g1:" << next_g[1] << ", min_g2_next: " << min_g2[next_id] << std::endl;
                 continue;
             }
-
             // If not dominated create node and push to queue
             // Creation is defered after dominance check as it is
             // relatively computational heavy and should be avoided if possible
