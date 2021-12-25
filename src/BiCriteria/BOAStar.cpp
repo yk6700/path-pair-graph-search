@@ -22,7 +22,7 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
     std::vector<size_t> min_g2(this->adj_matrix.size()+1, MAX_COST);
 
     // Init open heap
-    Node::more_than_full_cost_max more_than; //TODO change queue deciders
+    Node::more_than_full_cost more_than; //TODO change queue deciders
     std::vector<NodePtr> open;
     std::make_heap(open.begin(), open.end(), more_than);
 

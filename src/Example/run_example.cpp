@@ -73,7 +73,7 @@ void single_run_ny_map(size_t source, size_t target, double eps, LoggerPtr logge
 
 
 void run_queries(std::string map, double eps, LoggerPtr logger, Pair<size_t> bound) {
-    std::cout << "-----Start " << map << " Map Queries Example: EPS=" << eps << "-----" << std::endl;
+    std::cout << "-----Start " << map << " Map Queries Example: BOUND=" << bound << "-----" << std::endl;
 
     // Load files
     size_t graph_size;
@@ -120,33 +120,42 @@ void run_queries(std::string map, double eps, LoggerPtr logger, Pair<size_t> bou
 // Run all queries on all availible maps. The logs outputed from this function are
 // used for running the tests
 void run_all_queries(void) {
-    LoggerPtr logger_bay = new Logger("queries_BAY_ps_max_log.json");
-    run_queries("BAY", 0, logger_bay, Pair<size_t>({1500000,1500000}));
-    run_queries("BAY", 0, logger_bay, Pair<size_t>({2000000,2000000}));
-    run_queries("BAY", 0, logger_bay, Pair<size_t>({3000000,3000000}));
-    run_queries("BAY", 0, logger_bay, Pair<size_t>({5000000,5000000}));
-    run_queries("BAY", 0, logger_bay, Pair<size_t>({10000000,10000000}));
-    delete logger_bay;
+//    LoggerPtr logger_bay = new Logger("queries_BAY_regular_log.json");
+//    run_queries("BAY", 0, logger_bay, Pair<size_t>({1500000,1500000}));
+//    run_queries("BAY", 0, logger_bay, Pair<size_t>({2000000,2000000}));
+//    run_queries("BAY", 0, logger_bay, Pair<size_t>({3000000,3000000}));
+//    run_queries("BAY", 0, logger_bay, Pair<size_t>({5000000,5000000}));
+//    run_queries("BAY", 0, logger_bay, Pair<size_t>({10000000,10000000}));
+//    delete logger_bay;
 
-    LoggerPtr logger_col = new Logger("queries_COL_ps_max_log.json");
-    run_queries("COL", 0, logger_col, Pair<size_t>({1500000,1500000}));
-    run_queries("COL", 0, logger_col, Pair<size_t>({2000000,2000000}));
-    run_queries("COL", 0, logger_col, Pair<size_t>({3000000,3000000}));
+    LoggerPtr logger_col = new Logger("queries_COL_regular_log.json");
+    run_queries("COL", 0, logger_col, Pair<size_t>({4000000,4000000}));
     run_queries("COL", 0, logger_col, Pair<size_t>({5000000,5000000}));
+    run_queries("COL", 0, logger_col, Pair<size_t>({8000000,8000000}));
     run_queries("COL", 0, logger_col, Pair<size_t>({10000000,10000000}));
+    run_queries("COL", 0, logger_col, Pair<size_t>({12000000,12000000}));
+    run_queries("COL", 0, logger_col, Pair<size_t>({15000000,15000000}));
+    run_queries("COL", 0, logger_col, Pair<size_t>({20000000,20000000}));
     delete logger_col;
 
-    LoggerPtr logger_ne = new Logger("queries_NE_ps_max_log.json");
+    LoggerPtr logger_ne = new Logger("queries_NE_regular_log.json");
+    run_queries("NE", 0, logger_ne, Pair<size_t>({1500000,1500000}));
+    run_queries("NE", 0, logger_ne, Pair<size_t>({2000000,2000000}));
+    run_queries("NE", 0, logger_ne, Pair<size_t>({3000000,3000000}));
+    run_queries("NE", 0, logger_ne, Pair<size_t>({5000000,5000000}));
     run_queries("NE", 0, logger_ne, Pair<size_t>({8000000,8000000}));
     run_queries("NE", 0, logger_ne, Pair<size_t>({10000000,10000000}));
     run_queries("NE", 0, logger_ne, Pair<size_t>({15000000,15000000}));
     delete logger_ne;
 
-    LoggerPtr logger_ny = new Logger("queries_NY_ps_max_log.json");
+    LoggerPtr logger_ny = new Logger("queries_NY_regular_log.json");
+    run_queries("NY", 0, logger_ny, Pair<size_t>({150000,150000}));
+    run_queries("NY", 0, logger_ny, Pair<size_t>({300000,300000}));
+    run_queries("NY", 0, logger_ny, Pair<size_t>({500000,500000}));
+    run_queries("NY", 0, logger_ny, Pair<size_t>({1000000,1000000}));
+    run_queries("NY", 0, logger_ny, Pair<size_t>({1500000,1500000}));
     run_queries("NY", 0, logger_ny, Pair<size_t>({2000000,2000000}));
-    run_queries("NY", 0, logger_ny, Pair<size_t>({5000000,5000000}));
-    run_queries("NY", 0, logger_ny, Pair<size_t>({8000000,8000000}));
-    run_queries("NY", 0, logger_ny, Pair<size_t>({15000000,15000000}));
+    run_queries("NY", 0, logger_ny, Pair<size_t>({3000000,3000000}));
     delete logger_ny;
 }
 
@@ -161,7 +170,7 @@ int main(void) {
 //    // Hard - Benchmark C_BOA code gets around 2k ms
 //    size_t hard_source = 180834;
 //    size_t hard_target = 83150;
-//    //single_run_ny_map(hard_source, hard_target, 0, logger);
+//    single_run_ny_map(hard_source, hard_target, 0, logger);
 //    delete logger;
 
      try {
