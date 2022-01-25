@@ -4,6 +4,56 @@
 
 #include "ShortestPathHeuristic.h"
 
+#include <errno.h>
+#include <stdint.h>
+// Return best (rounded to nearest - ties to even) float to size_t conversion possible.
+// Set ERANGE when `f` was too small, too great.  Return 0, SIZE_MAX.
+// Set EDOM when `f` is NAN. Return 0.
+/*
+ * Converting `float f` to `size_t` with a cast is well defined when
+ * mathematically f > -1.0 and f < SIZE_MAX + 1.
+ *
+ * SIZE_MAX_P1_FLOAT: SIZE_MAX + 1 can overflow integer math, yet since
+ * SIZE_MAX is a Mersenne number
+ * (http://mathworld.wolfram.com/MersenneNumber.html),
+ * (SIZE_MAX/2 + 1) is computable and is exactly half of SIZE_MAX + 1.
+ *
+ * To return a rounded to nearest size_t,
+ * SIZE_MAX + 0.5 <= f also leads to out-of-range. Instead of
+ * `f < SIZE_MAX_P1_FLOAT - 0.5f` for upper limit test, use
+ * `f - SIZE_MAX_P1_FLOAT < -0.5f`
+ * to prevent precision loss near the upper bound.
+ *
+ * On rare platforms, FLT_MAX < SIZE_MAX+1 and an upper bound check
+ * on finite `f` is not needed.
+ * Below code does not yet account for that.
+ */
+
+// `float` value 1 past SIZE_MAX:
+#define SIZE_MAX_P1_FLOAT  ((SIZE_MAX/2 + 1)*2.0f)
+
+size_t float_rounded_to_size_t(float f) {
+    // In range?
+    if (f >= -0.5f && f - SIZE_MAX_P1_FLOAT < -0.5f) {
+        size_t sz = (size_t) f;
+        float frac = f - (float) sz;
+        if (frac > 0.5f || (frac >= 0.5f && sz % 2)) {
+            sz++;
+        }
+        return sz;
+    }
+    if (f >= 0.0f) {
+        errno = ERANGE;
+        return SIZE_MAX;  // f is too great
+    }
+    if (f < 0.0f) {
+        errno = ERANGE;
+        return 0;  // f is too negative
+    }
+    errno = EDOM;
+    return 0;  // f is not-a-number
+}
+
 
 ShortestPathHeuristic::ShortestPathHeuristic(size_t source, size_t graph_size, const AdjacencyMatrix &adj_matrix)
     : source(source), all_nodes(graph_size+1, nullptr) {
@@ -16,9 +66,16 @@ ShortestPathHeuristic::ShortestPathHeuristic(size_t source, size_t graph_size, c
     compute(1, adj_matrix);
 }
 
-
+//TODO change for different heuristic
 Pair<size_t> ShortestPathHeuristic::operator()(size_t node_id) {
-    return this->all_nodes[node_id]->h;
+    size_t h1 = 0.9 * this->all_nodes[node_id]->h[0];
+    size_t h2 = 0.9 * this->all_nodes[node_id]->h[1];
+//    std::cout << "h1: " << this->all_nodes[node_id]->h[1] << ", h2: " << this->all_nodes[node_id]->h[2] << std::endl;
+//    std::cout << "h1_double: " << h1 << ", h2_double: " << h2 << std::endl;
+//    std::cout << "h1_t: " << (size_t)h1 << ", h2_t: " << (size_t)h2 << std::endl;
+
+    return Pair<size_t>{h1, h2};
+    //return this->all_nodes[node_id]->h;
 }
 
 

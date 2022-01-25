@@ -3,10 +3,21 @@
 
 #include "BOAStar.h"
 
+//struct f_decider {
+//    Node::more_than_full_cost_min more_than_c_min;
+//    Node::more_than_full_cost_max more_than_c_max;
+//    Node::more_than_full_cost_avg more_than_c_avg;
+//    Node::more_than_full_cost more_than_c;
+//    Node::more_than_huristic_max more_than_h_max;
+//    Node::more_than_huristic_min more_than_h_min;
+//    Node::more_than_huristic_avg more_than_h_avg;
+//};
+
+
 BOAStar::BOAStar(const AdjacencyMatrix &adj_matrix, Pair<double> eps, Pair<size_t> bound, const LoggerPtr logger) :
 	adj_matrix(adj_matrix), eps(eps), logger(logger), bounds(bound) {}
 
-void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, SolutionSet &solutions, Pair<size_t> Bound) {
+void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, SolutionSet &solutions, Pair<size_t> Bound, int decider) {
     this->start_logging(source, target);
     //Bound = this->bounds;
 
@@ -22,18 +33,70 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
     std::vector<size_t> min_g2(this->adj_matrix.size()+1, MAX_COST);
 
     // Init open heap
-    Node::more_than_full_cost more_than; //TODO change queue deciders
+    Node::more_than_full_cost_min more_than_c_min; //TODO change queue deciders
+    Node::more_than_full_cost_max more_than_c_max;
+    Node::more_than_full_cost_avg more_than_c_avg;
+    Node::more_than_full_cost more_than_c;
+    Node::more_than_huristic_max more_than_h_max;
+    Node::more_than_huristic_min more_than_h_min;
+    Node::more_than_huristic_avg more_than_h_avg;
+
     std::vector<NodePtr> open;
-    std::make_heap(open.begin(), open.end(), more_than);
+    if(decider == 0){
+        std::make_heap(open.begin(), open.end(), more_than_c);
+    } else if (decider == 1){
+        std::make_heap(open.begin(), open.end(), more_than_c_min);
+    } else if (decider == 2){
+        std::make_heap(open.begin(), open.end(), more_than_c_max);
+    } else if (decider == 3){
+        std::make_heap(open.begin(), open.end(), more_than_c_avg);
+    } else if (decider == 4){
+        std::make_heap(open.begin(), open.end(), more_than_h_min);
+    } else if (decider == 5){
+        std::make_heap(open.begin(), open.end(), more_than_h_max);
+    } else if (decider == 6){
+        std::make_heap(open.begin(), open.end(), more_than_h_avg);
+    }
+
 
     node = std::make_shared<Node>(source, Pair<size_t>({0,0}), heuristic(source), Bound);
     open.push_back(node);
-    std::push_heap(open.begin(), open.end(), more_than);
+    if(decider == 0){
+        std::push_heap(open.begin(), open.end(), more_than_c);
+    } else if (decider == 1){
+        std::push_heap(open.begin(), open.end(), more_than_c_min);
+    } else if (decider == 2){
+        std::push_heap(open.begin(), open.end(), more_than_c_max);
+    } else if (decider == 3){
+        std::push_heap(open.begin(), open.end(), more_than_c_avg);
+    } else if (decider == 4){
+        std::push_heap(open.begin(), open.end(), more_than_h_min);
+    } else if (decider == 5){
+        std::push_heap(open.begin(), open.end(), more_than_h_max);
+    } else if (decider == 6){
+        std::push_heap(open.begin(), open.end(), more_than_h_avg);
+    }
+    //std::push_heap(open.begin(), open.end(), more_than);
     generated++;
 
     while (open.empty() == false) {
         // Pop min from queue and process
-        std::pop_heap(open.begin(), open.end(), more_than);
+        if(decider == 0){
+            std::pop_heap(open.begin(), open.end(), more_than_c);
+        } else if (decider == 1){
+            std::pop_heap(open.begin(), open.end(), more_than_c_min);
+        } else if (decider == 2){
+            std::pop_heap(open.begin(), open.end(), more_than_c_max);
+        } else if (decider == 3){
+            std::pop_heap(open.begin(), open.end(), more_than_c_avg);
+        } else if (decider == 4){
+            std::pop_heap(open.begin(), open.end(), more_than_h_min);
+        } else if (decider == 5){
+            std::pop_heap(open.begin(), open.end(), more_than_h_max);
+        } else if (decider == 6){
+            std::pop_heap(open.begin(), open.end(), more_than_h_avg);
+        }
+        //std::pop_heap(open.begin(), open.end(), more_than);
         node = open.back();
         open.pop_back();
 
@@ -79,7 +142,22 @@ void BOAStar::operator()(size_t source, size_t target, Heuristic &heuristic, Sol
             next = std::make_shared<Node>(next_id, next_g, next_h, Bound,node);
             //std::cout << "F: " << next->f << std::endl;
             open.push_back(next);
-            std::push_heap(open.begin(), open.end(), more_than);
+            if(decider == 0){
+                std::push_heap(open.begin(), open.end(), more_than_c);
+            } else if (decider == 1){
+                std::push_heap(open.begin(), open.end(), more_than_c_min);
+            } else if (decider == 2){
+                std::push_heap(open.begin(), open.end(), more_than_c_max);
+            } else if (decider == 3){
+                std::push_heap(open.begin(), open.end(), more_than_c_avg);
+            } else if (decider == 4){
+                std::push_heap(open.begin(), open.end(), more_than_h_min);
+            } else if (decider == 5){
+                std::push_heap(open.begin(), open.end(), more_than_h_max);
+            } else if (decider == 6){
+                std::push_heap(open.begin(), open.end(), more_than_h_avg);
+            }
+            //std::push_heap(open.begin(), open.end(), more_than);
             generated++; //TODO add generate
             closed.push_back(node);
         }

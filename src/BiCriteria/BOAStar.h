@@ -17,7 +17,7 @@ private:
 
 public:
     BOAStar(const AdjacencyMatrix &adj_matrix, Pair<double> eps, Pair<size_t> bound, const LoggerPtr logger=nullptr);
-    void operator()(size_t source, size_t target, Heuristic &heuristic, SolutionSet &solutions, Pair<size_t> Bound);
+    void operator()(size_t source, size_t target, Heuristic &heuristic, SolutionSet &solutions, Pair<size_t> Bound, int decider=1);
 };
 
 #endif //BI_CRITERIA_BOA_STAR_H

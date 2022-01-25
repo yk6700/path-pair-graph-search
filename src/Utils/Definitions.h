@@ -76,16 +76,18 @@ struct Node {
     Pair<size_t>    g;
     Pair<size_t>    h;
     //TODO change between double and size_t
-//    Pair<double>    f;
-    Pair<size_t>    f;
+    Pair<double>    f;
+//    Pair<size_t>    f;
     NodePtr         parent;
 
     //TODO change heuristic
-//    Node(size_t id, Pair<size_t> g, Pair<size_t> h, Pair<size_t> b, NodePtr parent=nullptr)
-//        : id(id), g(g), h(h), f({((double)h[0]) / ((double)(b[0]-g[0])), ((double)h[1]) / ((double)(b[1]-g[1]))}), parent(parent) {};
-
     Node(size_t id, Pair<size_t> g, Pair<size_t> h, Pair<size_t> b, NodePtr parent=nullptr)
-            : id(id), g(g), h(h), f({g[0]+h[0],g[1]+h[1]}), parent(parent) {};
+        : id(id), g(g), h(h), f({((double)h[0]) / ((double)(b[0]-g[0])), ((double)h[1]) / ((double)(b[1]-g[1]))}), parent(parent) {
+        //std::cout << "f: " << f << std::endl;
+    };
+
+//    Node(size_t id, Pair<size_t> g, Pair<size_t> h, Pair<size_t> b, NodePtr parent=nullptr)
+//            : id(id), g(g), h(h), f({g[0]+h[0],g[1]+h[1]}), parent(parent) {};
 
     struct more_than_specific_heurisitic_cost {
         size_t cost_idx;
@@ -107,6 +109,18 @@ struct Node {
     };
 
     struct more_than_full_cost_max {
+        bool operator()(const NodePtr &a, const NodePtr &b) const;
+    };
+
+    struct more_than_huristic_max {
+        bool operator()(const NodePtr &a, const NodePtr &b) const;
+    };
+
+    struct more_than_huristic_min {
+        bool operator()(const NodePtr &a, const NodePtr &b) const;
+    };
+
+    struct more_than_huristic_avg {
         bool operator()(const NodePtr &a, const NodePtr &b) const;
     };
 

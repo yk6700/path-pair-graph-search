@@ -93,6 +93,27 @@ bool Node::more_than_full_cost_max::operator()(const NodePtr &a, const NodePtr &
     return max_a > max_b;
 }
 
+/////////////////////////////////////////////////
+
+bool Node::more_than_huristic_avg::operator()(const NodePtr &a, const NodePtr &b) const {
+    double avg_a = (a->h[0] + a->h[1]) / 2;
+    double avg_b = (b->h[0] + b->h[1]) / 2;
+    return avg_a > avg_b;
+}
+
+bool Node::more_than_huristic_min::operator()(const NodePtr &a, const NodePtr &b) const {
+    double min_a = std::min(a->h[0], a->h[1]);
+    double min_b = std::min(b->h[0], b->h[1]);
+    return min_a > min_b;
+}
+
+
+bool Node::more_than_huristic_max::operator()(const NodePtr &a, const NodePtr &b) const {
+    double max_a = std::max(a->h[0], a->h[1]);
+    double max_b = std::max(b->h[0], b->h[1]);
+    return max_a > max_b;
+}
+
 
 //TODO add more queue deciders
 

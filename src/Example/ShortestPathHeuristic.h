@@ -14,7 +14,7 @@ private:
     void compute(size_t cost_idx, const AdjacencyMatrix& adj_matrix);
 public:
     ShortestPathHeuristic(size_t source, size_t graph_size, const AdjacencyMatrix &adj_matrix);
-    Pair<size_t> operator()(size_t node_id);
+    Pair<size_t> operator()(size_t node_id); //TODO change for different heuristic
 };
 
 #endif // EXAMPLE_SHORTEST_PATH_HEURISTIC_H
